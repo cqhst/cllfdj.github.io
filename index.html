@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>车辆来访登记系统</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -32,20 +35,20 @@ h1{font-size:1.4rem;margin-bottom:.25rem}
 </div>
 <script>
 (function(){
-  fetch('./tunnel-url.json?t='+Date.now()).then(function(r){
-    if(!r.ok)throw new Error('HTTP '+r.status);return r.json();
-  }).then(function(j){
-    if(j&&j.url){
-      window.location.href=j.url;
-    }else{
-      document.getElementById('stxt').textContent='暂无地址';
-      document.getElementById('err').textContent='系统可能正在启动中，请稍后刷新';
-    }
-  }).catch(function(x){
-    document.getElementById('stxt').textContent='获取失败';
-    document.getElementById('err').textContent='请稍后刷新重试';
-  });
+  function go(url){window.location.replace(url);}
+  function showErr(msg){
+    document.getElementById('stxt').textContent='跳转失败';
+    document.getElementById('err').textContent=msg;
+    document.getElementById('btn').style.display='inline-block';
+  }
+  fetch('./tunnel-url.json?t='+Date.now())
+    .then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
+    .then(function(j){
+      if(j&&j.url){go(j.url);}else{showErr('暂无可用地址，请稍后刷新');}
+    })
+    .catch(function(x){showErr('获取地址失败: '+x.message);});
 })();
 </script>
+<!-- cache-buster: 20260520154502 -->
 </body>
 </html>
