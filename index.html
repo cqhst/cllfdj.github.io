@@ -5,65 +5,46 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>车辆来访登记系统</title>
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8fafc; color: #1e293b; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-.card { background: #fff; border-radius: 16px; box-shadow: 0 1px 3px rgba(0,0,0,.1); padding: 2.5rem; max-width: 420px; width: 90%; text-align: center; }
-h1 { font-size: 1.4rem; margin-bottom: .25rem; }
-.sub { color: #64748b; font-size: .85rem; margin-bottom: 1.5rem; }
-.status { display: inline-flex; align-items: center; gap: 8px; padding: .5rem 1rem; border-radius: 99px; font-size: .85rem; font-weight: 500; margin-bottom: 1rem; }
-.status.loading { background: #eff6ff; color: #2563eb; }
-.status.online { background: #f0fdf4; color: #16a34a; }
-.status.offline { background: #fef3c7; color: #d97706; }
-.dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
-.status.loading .dot { animation: pulse 1.5s infinite; }
-@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
-.url-box { background: #f1f5f9; border-radius: 10px; padding: 1rem; margin: 1rem 0; word-break: break-all; }
-.url-box a { color: #2563eb; font-size: .82rem; text-decoration: none; }
-.url-box a:hover { text-decoration: underline; }
-.btn { display: inline-block; padding: .7rem 2rem; background: #2563eb; color: #fff; border: none; border-radius: 10px; font-size: 1rem; cursor: pointer; text-decoration: none; transition: background .2s; }
-.btn:hover { background: #1d4ed8; }
-.time { color: #94a3b8; font-size: .75rem; margin-top: 1rem; }
-.err { color: #ef4444; font-size: .8rem; margin-top: .5rem; }
-.countdown { color: #64748b; font-size: .8rem; margin-top: .5rem; }
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1e293b;min-height:100vh;display:flex;align-items:center;justify-content:center}
+.card{background:#fff;border-radius:16px;box-shadow:0 1px 3px rgba(0,0,0,.1);padding:2.5rem;max-width:420px;width:90%;text-align:center}
+h1{font-size:1.4rem;margin-bottom:.25rem}
+.sub{color:#64748b;font-size:.85rem;margin-bottom:1.5rem}
+.status{display:inline-flex;align-items:center;gap:8px;padding:.5rem 1rem;border-radius:99px;font-size:.85rem;font-weight:500;margin-bottom:1rem}
+.status.loading{background:#eff6ff;color:#2563eb}
+.status.online{background:#f0fdf4;color:#16a34a}
+.status.offline{background:#fef3c7;color:#d97706}
+.dot{width:8px;height:8px;border-radius:50%;background:currentColor}
+.status.loading .dot{animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.btn{display:inline-block;padding:.7rem 2rem;background:#2563eb;color:#fff;border:none;border-radius:10px;font-size:1rem;cursor:pointer;text-decoration:none}
+.btn:hover{background:#1d4ed8}
+.err{color:#ef4444;font-size:.8rem;margin-top:.5rem}
 </style>
 </head>
 <body>
 <div class="card">
   <h1>车辆来访登记系统</h1>
   <p class="sub">重庆豪斯特车辆来访登记</p>
-  <div id="status" class="status loading"><span class="dot"></span><span id="stxt">正在获取地址...</span></div>
-  <div id="urlbox" class="url-box" style="display:none"></div>
-  <a id="btn" class="btn" style="display:none" href="#" target="_blank">立即进入</a>
-  <div id="countdown" class="countdown"></div>
-  <div id="time" class="time"></div>
+  <div id="status" class="status loading"><span class="dot"></span><span id="stxt">正在跳转...</span></div>
+  <a id="btn" class="btn" style="display:none" href="#" target="_blank">手动进入</a>
   <div id="err" class="err"></div>
 </div>
 <script>
 (function(){
-  var s=document.getElementById('status'),t=document.getElementById('stxt'),
-      u=document.getElementById('urlbox'),b=document.getElementById('btn'),
-      tm=document.getElementById('time'),e=document.getElementById('err'),
-      cd=document.getElementById('countdown'),
-      d=s.querySelector('.dot');
-  function setS(c,tx){s.className='status '+c;d.className='dot';t.textContent=tx;}
   fetch('./tunnel-url.json?t='+Date.now()).then(function(r){
     if(!r.ok)throw new Error('HTTP '+r.status);return r.json();
   }).then(function(j){
     if(j&&j.url){
-      setS('online','系统在线');
-      u.style.display='block';
-      u.innerHTML='<a href="'+j.url+'" target="_blank">'+j.url+'</a>';
-      b.href=j.url;b.style.display='inline-block';
-      if(j.updated){tm.textContent='更新时间: '+new Date(j.updated).toLocaleString('zh-CN');}
-      var sec=3;
-      cd.textContent=sec+'秒后自动跳转...';
-      var iv=setInterval(function(){
-        sec--;
-        if(sec<=0){clearInterval(iv);window.location.href=j.url;}
-        else{cd.textContent=sec+'秒后自动跳转...';}
-      },1000);
-    }else{setS('offline','暂无地址');e.textContent='系统可能正在启动中，请稍后刷新';}
-  }).catch(function(x){setS('offline','获取失败');e.textContent='请稍后刷新重试';});
+      window.location.href=j.url;
+    }else{
+      document.getElementById('stxt').textContent='暂无地址';
+      document.getElementById('err').textContent='系统可能正在启动中，请稍后刷新';
+    }
+  }).catch(function(x){
+    document.getElementById('stxt').textContent='获取失败';
+    document.getElementById('err').textContent='请稍后刷新重试';
+  });
 })();
 </script>
 </body>
